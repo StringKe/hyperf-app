@@ -1,0 +1,125 @@
+{
+  "name": "yinbaitu/php-framework",
+  "type": "project",
+  "keywords": [
+    "php",
+    "swoole",
+    "framework",
+    "hyperf",
+    "microservice",
+    "middleware"
+  ],
+  "description": "使用 hyperf 框架定制的应用框架",
+  "license": "MIT",
+  "require": {
+    "php": ">=7.2",
+    "ext-json": "*",
+    "ext-openssl": "*",
+    "ext-pdo": "*",
+    "ext-pdo_mysql": "*",
+    "ext-redis": "*",
+    "ext-swoole": ">=4.5",
+    "aliyuncs/oss-sdk-php": "^2.4",
+    "hyperf/async-queue": "2.0.*",
+    "hyperf/cache": "2.0.*",
+    "hyperf/command": "2.0.*",
+    "hyperf/config": "2.0.*",
+    "hyperf/constants": "2.0.*",
+    "hyperf/contract": "2.0.*",
+    "hyperf/database": "2.0.*",
+    "hyperf/db-connection": "2.0.*",
+    "hyperf/di": "2.0.*",
+    "hyperf/dispatcher": "2.0.*",
+    "hyperf/event": "2.0.*",
+    "hyperf/exception-handler": "2.0.*",
+    "hyperf/filesystem": "^2.0",
+    "hyperf/framework": "2.0.*",
+    "hyperf/guzzle": "2.0.*",
+    "hyperf/http-server": "2.0.*",
+    "hyperf/logger": "2.0.*",
+    "hyperf/model-cache": "2.0.*",
+    "hyperf/pool": "2.0.*",
+    "hyperf/process": "2.0.*",
+    "hyperf/redis": "2.0.*",
+    "hyperf/server": "2.0.*",
+    "hyperf/snowflake": "^2.0",
+    "hyperf/utils": "2.0.*",
+    "hyperf/validation": "^2.0"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^2.14",
+    "hyperf/devtool": "2.0.*",
+    "hyperf/testing": "2.0.*",
+    "mockery/mockery": "^1.0",
+    "phpstan/phpstan": "^0.12.18",
+    "swoole/ide-helper": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    },
+    "files": [
+      "app/Kernel/Functions.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "HyperfTest\\": "test/"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+    "sort-packages": true
+  },
+  "extra": [],
+  "scripts": {
+    "post-root-package-install": [
+      "@php -r \"file_exists('.env') || copy('.env.local', '.env');\""
+    ],
+    "post-autoload-dump": [
+      "rm -rf runtime/container"
+    ],
+    "analyse": "phpstan analyse --memory-limit 512M -l 0 -c phpstan.neon ./app ./config",
+    "cs-fix": "php-cs-fixer fix $1",
+    "start": "php ./bin/hyperf.php start",
+    "test": "co-phpunit -c phpunit.xml --colors=always",
+    "di:local": [
+      "@php -r \"copy('.env.local', '.env');\"",
+      "@dump-autoload -o",
+      "@post-autoload-dump",
+      "@cs-fix"
+    ],
+    "di:cache": [
+      "@dump-autoload -o",
+      "@post-autoload-dump",
+      "echo '\nSCAN_CACHEABLE=true' >> .env"
+    ],
+    "di:test": [
+      "@php -r \"copy('.env.test', '.env');\"",
+      "@di:cache"
+    ],
+    "di:prod": [
+      "@php -r \"copy('.env.prod', '.env');\"",
+      "@di:cache"
+    ],
+    "docker:devlop:init": [
+      "docker build -t api:develop .",
+      "docker stop apidev",
+      "docker rm apidev",
+      "docker run -dit --name apidev -v $PWD/:/opt/www api:develop"
+    ],
+    "docker:devlop:start": "docker start apidev",
+    "docker:devlop:stop": "docker stop apidev",
+    "docker:devlop:logs": "docker logs apidev",
+    "docker:devlop:status": "docker stats apidev --no-stream",
+    "docker:devlop:stats": "docker stats apidev",
+    "docker:devlop:restart": "docker restart apidev"
+  },
+  "repositories": {
+    "packagist": {
+      "type": "composer",
+      "url": "https://mirrors.aliyun.com/composer"
+    }
+  }
+}
